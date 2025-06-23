@@ -49,7 +49,7 @@ The application follows OOP principles with three main classes:
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/student-grade-management.git
+   git clone https://github.com/UzairJarral/student-grade-management.git
    cd student-grade-management
    ```
 
