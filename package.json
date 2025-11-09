@@ -72,6 +72,10 @@
       "!db/*.db",
       "package.json"
     ],
+    "asarUnpack": [
+      "backend/**/*",
+      "node_modules/better-sqlite3/**/*"
+    ],
     "extraResources": [
       {
         "from": "db",

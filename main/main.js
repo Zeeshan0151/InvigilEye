@@ -9,11 +9,18 @@ let backendProcess;
 // Start the backend server
 function startBackendServer() {
   return new Promise((resolve, reject) => {
+    // Use unpacked backend in production (app.asar.unpacked)
     const backendPath = isDev 
       ? path.join(__dirname, '../backend/server.js')
-      : path.join(process.resourcesPath, 'app.asar', 'backend/server.js');
+      : path.join(process.resourcesPath, 'app.asar.unpacked', 'backend', 'server.js');
+    
+    // Use unpacked directory as cwd in production
+    const workingDir = isDev 
+      ? path.join(__dirname, '..')
+      : path.join(process.resourcesPath, 'app.asar.unpacked');
     
     console.log('Starting backend server from:', backendPath);
+    console.log('Working directory:', workingDir);
     
     // Get user data path for database
     const userDataPath = app.getPath('userData');
@@ -21,7 +28,7 @@ function startBackendServer() {
     console.log('Database will be stored at:', dbPath);
     
     backendProcess = spawn('node', [backendPath], {
-      cwd: isDev ? path.join(__dirname, '..') : path.join(process.resourcesPath, 'app.asar'),
+      cwd: workingDir,
       env: {
         ...process.env,
         NODE_ENV: isDev ? 'development' : 'production',
@@ -106,8 +113,15 @@ function createWindow() {
 app.whenReady().then(async () => {
   // Start backend server first
   console.log('Starting backend server...');
-  await startBackendServer();
-  console.log('Backend server started, creating window...');
+  
+  try {
+    await startBackendServer();
+    console.log('Backend server started, creating window...');
+  } catch (error) {
+    console.error('CRITICAL: Backend failed to start:', error);
+    console.error('App will open anyway to show error...');
+    // Continue to create window even if backend fails
+  }
   
   createWindow();
 
@@ -116,6 +130,9 @@ app.whenReady().then(async () => {
       createWindow();
     }
   });
+}).catch(error => {
+  console.error('FATAL: App failed to start:', error);
+  app.quit();
 });
 
 app.on('window-all-closed', () => {
