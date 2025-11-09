@@ -21,21 +21,36 @@ function startBackendServer() {
     
     console.log('Starting backend server from:', backendPath);
     console.log('Working directory:', workingDir);
+    console.log('Platform:', process.platform);
     
     // Get user data path for database
     const userDataPath = app.getPath('userData');
     const dbPath = path.join(userDataPath, 'invigleye.db');
     console.log('Database will be stored at:', dbPath);
     
-    backendProcess = spawn('node', [backendPath], {
+    // Determine Node.js executable
+    // In production, use Electron as Node.js (it has Node.js built-in!)
+    // In development, use system Node.js
+    const nodeExecutable = isDev ? 'node' : process.execPath;
+    const isWindows = process.platform === 'win32';
+    
+    console.log('Node executable:', nodeExecutable);
+    
+    const spawnOptions = {
       cwd: workingDir,
+      shell: isWindows,  // Windows needs shell mode
       env: {
         ...process.env,
+        // ELECTRON_RUN_AS_NODE makes Electron behave as Node.js
+        ELECTRON_RUN_AS_NODE: '1',
         NODE_ENV: isDev ? 'development' : 'production',
         DB_PATH: dbPath,
         USER_DATA_PATH: userDataPath
       }
-    });
+    };
+    
+    console.log('Spawning backend with Electron as Node.js');
+    backendProcess = spawn(nodeExecutable, [backendPath], spawnOptions);
 
     backendProcess.stdout.on('data', (data) => {
       console.log(`Backend: ${data}`);
