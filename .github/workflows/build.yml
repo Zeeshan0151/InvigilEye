@@ -1,43 +1,68 @@
-name: Build Installers
+name: Build and Release
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    tags:
+      - 'v*'
   workflow_dispatch:
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
-    
+  release:
     runs-on: ${{ matrix.os }}
     
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
+    
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Build Electron app
-      run: npm run build
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: installers-${{ matrix.os }}
-        path: |
-          dist/*.exe
-          dist/*.dmg
-          dist/*.AppImage
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build React app
+        run: npm run react:build
+      
+      - name: Build Electron app (Windows)
+        if: matrix.os == 'windows-latest'
+        run: npx electron-builder --windows
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Build Electron app (macOS)
+        if: matrix.os == 'macos-latest'
+        run: npx electron-builder --mac
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Upload Windows installer
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v3
+        with:
+          name: InvigilEye-Windows
+          path: dist/*.exe
+      
+      - name: Upload macOS installer
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v3
+        with:
+          name: InvigilEye-macOS
+          path: dist/*.dmg
+      
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/*.exe
+            dist/*.dmg
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

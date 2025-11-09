@@ -13,8 +13,40 @@
 
 ---
 
+## 📥 Download
+
+<div align="center">
+
+### Latest Release - v1.0.0
+
+| Platform | Download Link | Size |
+|----------|--------------|------|
+| 🪟 **Windows** | [Download InvigilEye-Setup.exe](https://github.com/Zeeshan0151/InvigilEye/releases/latest/download/InvigilEye-Setup-1.0.0.exe) | ~150 MB |
+| 🍎 **macOS** | [Download InvigilEye.dmg](https://github.com/Zeeshan0151/InvigilEye/releases/latest/download/InvigilEye-1.0.0.dmg) | ~200 MB |
+
+**Or view all releases:** [GitHub Releases Page](https://github.com/Zeeshan0151/InvigilEye/releases)
+
+</div>
+
+### Installation Instructions:
+
+**Windows:**
+1. Download `InvigilEye-Setup.exe`
+2. Double-click the installer
+3. Follow the installation wizard
+4. Launch from Start Menu
+
+**macOS:**
+1. Download `InvigilEye.dmg`
+2. Open the DMG file
+3. Drag InvigilEye to Applications folder
+4. Launch from Applications or Launchpad
+
+---
+
 ## 📋 Table of Contents
 
+- [Download](#download)
 - [Overview](#overview)
 - [Features](#features)
 - [Tech Stack](#tech-stack)

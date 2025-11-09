@@ -8,6 +8,7 @@
     "backend": "node backend/server.js",
     "electron:dev": "wait-on http://localhost:3000 && electron .",
     "react:dev": "vite",
+    "react:build": "vite build",
     "build": "vite build && electron-builder",
     "build:win": "vite build && electron-builder --win",
     "build:mac": "vite build && electron-builder --mac",
