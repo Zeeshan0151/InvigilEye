@@ -1,7 +1,40 @@
 const Database = require('better-sqlite3');
 const path = require('path');
+const fs = require('fs');
+const os = require('os');
 
-const dbPath = path.join(__dirname, '../../db/invigleye.db');
+// Determine database path based on environment
+let dbPath;
+const isDev = process.env.NODE_ENV === 'development';
+const dbPathEnv = process.env.DB_PATH; // Will be passed from main process
+
+if (dbPathEnv) {
+  // Use path provided by main process (production)
+  dbPath = dbPathEnv;
+  console.log('📁 Using provided DB path:', dbPath);
+} else if (!isDev) {
+  // Fallback for production if env var not set
+  const userDataPath = process.platform === 'win32'
+    ? path.join(process.env.APPDATA || os.homedir(), 'InvigilEye')
+    : path.join(os.homedir(), 'Library', 'Application Support', 'InvigilEye');
+  
+  // Create directory if it doesn't exist
+  if (!fs.existsSync(userDataPath)) {
+    fs.mkdirSync(userDataPath, { recursive: true });
+  }
+  
+  dbPath = path.join(userDataPath, 'invigleye.db');
+  console.log('📁 Production DB path:', dbPath);
+} else {
+  // In development, use local db folder
+  const devDbPath = path.join(__dirname, '../../db');
+  if (!fs.existsSync(devDbPath)) {
+    fs.mkdirSync(devDbPath, { recursive: true });
+  }
+  dbPath = path.join(devDbPath, 'invigleye.db');
+  console.log('📁 Development DB path:', dbPath);
+}
+
 const db = new Database(dbPath);
 
 const init = () => {
