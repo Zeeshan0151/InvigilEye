@@ -66,16 +66,34 @@
       "main/**/*",
       "renderer/dist/**/*",
       "backend/**/*",
-      "db/**/*"
+      "!backend/uploads/*",
+      "backend/uploads/README.md",
+      "db/.gitkeep",
+      "!db/*.db",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "db",
+        "to": "db",
+        "filter": [".gitkeep"]
+      }
     ],
     "mac": {
-      "target": "dmg"
+      "target": "dmg",
+      "category": "public.app-category.education"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "renderer/public/vite.svg"
     },
     "linux": {
-      "target": "AppImage"
+      "target": "AppImage",
+      "category": "Education"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
     }
   }
 }
