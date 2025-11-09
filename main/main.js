@@ -39,24 +39,65 @@ function startBackendServer() {
       console.log('Changing cwd to:', backendDir);
       process.chdir(backendDir);
       
+      // Pre-check: Try to require better-sqlite3 first
+      try {
+        console.log('Testing better-sqlite3...');
+        const sqlite3Path = isDev 
+          ? 'better-sqlite3'
+          : path.join(process.resourcesPath, 'app.asar.unpacked', 'node_modules', 'better-sqlite3');
+        console.log('better-sqlite3 path:', sqlite3Path);
+        const Database = require(sqlite3Path);
+        console.log('✅ better-sqlite3 loaded successfully');
+      } catch (sqliteError) {
+        console.error('❌ better-sqlite3 FAILED to load:', sqliteError.message);
+        console.error('This is the root cause - backend cannot start without database');
+      }
+      
       // Require and start the backend server
       try {
+        console.log('About to require backend...');
         backendServer = require(backendPath);
-        console.log('✅ Backend server loaded successfully');
+        console.log('✅ Backend module loaded');
+        console.log('Backend type:', typeof backendServer);
         
-        // Backend starts automatically when required (it has app.listen in server.js)
-        // Give it a moment to start
+        // Test if backend is actually running by making a request
         setTimeout(() => {
-          console.log('✅ Backend should be running on port 5001');
-          resolve();
-        }, 2000);
+          const http = require('http');
+          const testReq = http.get('http://localhost:5001/health', (res) => {
+            let data = '';
+            res.on('data', chunk => data += chunk);
+            res.on('end', () => {
+              console.log('✅ Backend health check passed:', data);
+              resolve();
+            });
+          });
+          
+          testReq.on('error', (err) => {
+            console.error('❌ Backend health check FAILED:', err.message);
+            console.error('Backend is loaded but NOT listening on port 5001!');
+            console.error('This likely means better-sqlite3 or another module failed to load');
+            // Still resolve to open window with error visible
+            resolve();
+          });
+          
+          testReq.setTimeout(5000);
+        }, 3000);
         
       } catch (requireError) {
-        console.error('❌ Failed to require backend:', requireError);
-        console.error('Stack:', requireError.stack);
+        console.error('❌ Failed to require backend:', requireError.message);
+        console.error('Error code:', requireError.code);
+        console.error('Full stack:', requireError.stack);
+        
+        // Check if it's a module not found error
+        if (requireError.code === 'MODULE_NOT_FOUND') {
+          console.error('❌ MISSING MODULE:', requireError.message);
+          console.error('This is likely better-sqlite3 not being found');
+        }
+        
         // Restore original cwd
         process.chdir(originalCwd);
-        reject(requireError);
+        // Still resolve to show window with errors visible
+        resolve();
       }
       
     } catch (error) {
