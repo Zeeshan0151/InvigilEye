@@ -84,8 +84,7 @@
       "category": "public.app-category.education"
     },
     "win": {
-      "target": "nsis",
-      "icon": "renderer/public/vite.svg"
+      "target": "nsis"
     },
     "linux": {
       "target": "AppImage",
