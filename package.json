@@ -11,7 +11,7 @@
     "react:build": "vite build",
     "build": "vite build && electron-builder",
     "build:win": "vite build && electron-builder --win",
-    "build:mac": "vite build && electron-builder --mac",
+    "build:mac": "vite build && electron-builder --mac --x64 --arm64",
     "build:linux": "vite build && electron-builder --linux",
     "build:all": "vite build && electron-builder -mwl",
     "dev": "concurrently \"npm run react:dev\" \"npm run backend\" \"wait-on http://localhost:3000 && electron .\"",
@@ -80,8 +80,15 @@
       }
     ],
     "mac": {
-      "target": "dmg",
-      "category": "public.app-category.education"
+      "target": {
+        "target": "dmg",
+        "arch": ["x64", "arm64"]
+      },
+      "category": "public.app-category.education",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": null,
+      "entitlementsInherit": null
     },
     "win": {
       "target": "nsis"
