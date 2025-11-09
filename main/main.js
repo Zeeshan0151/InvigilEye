@@ -1,80 +1,69 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
-const { spawn } = require('child_process');
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
 
 let mainWindow;
-let backendProcess;
+let backendServer;
 
-// Start the backend server
+// Start the backend server directly in the main process
 function startBackendServer() {
   return new Promise((resolve, reject) => {
-    // Use unpacked backend in production (app.asar.unpacked)
-    const backendPath = isDev 
-      ? path.join(__dirname, '../backend/server.js')
-      : path.join(process.resourcesPath, 'app.asar.unpacked', 'backend', 'server.js');
-    
-    // Use unpacked directory as cwd in production
-    const workingDir = isDev 
-      ? path.join(__dirname, '..')
-      : path.join(process.resourcesPath, 'app.asar.unpacked');
-    
-    console.log('Starting backend server from:', backendPath);
-    console.log('Working directory:', workingDir);
-    console.log('Platform:', process.platform);
-    
-    // Get user data path for database
-    const userDataPath = app.getPath('userData');
-    const dbPath = path.join(userDataPath, 'invigleye.db');
-    console.log('Database will be stored at:', dbPath);
-    
-    // Determine Node.js executable
-    // In production, use Electron as Node.js (it has Node.js built-in!)
-    // In development, use system Node.js
-    const nodeExecutable = isDev ? 'node' : process.execPath;
-    const isWindows = process.platform === 'win32';
-    
-    console.log('Node executable:', nodeExecutable);
-    
-    const spawnOptions = {
-      cwd: workingDir,
-      shell: isWindows,  // Windows needs shell mode
-      env: {
-        ...process.env,
-        // ELECTRON_RUN_AS_NODE makes Electron behave as Node.js
-        ELECTRON_RUN_AS_NODE: '1',
-        NODE_ENV: isDev ? 'development' : 'production',
-        DB_PATH: dbPath,
-        USER_DATA_PATH: userDataPath
+    try {
+      console.log('Starting backend server in main process...');
+      console.log('Platform:', process.platform);
+      console.log('isDev:', isDev);
+      
+      // Get user data path for database
+      const userDataPath = app.getPath('userData');
+      const dbPath = path.join(userDataPath, 'invigleye.db');
+      console.log('Database will be stored at:', dbPath);
+      
+      // Set environment variables for backend
+      process.env.NODE_ENV = isDev ? 'development' : 'production';
+      process.env.DB_PATH = dbPath;
+      process.env.USER_DATA_PATH = userDataPath;
+      
+      // Determine backend path
+      const backendPath = isDev 
+        ? path.join(__dirname, '../backend/server.js')
+        : path.join(process.resourcesPath, 'app.asar.unpacked', 'backend', 'server.js');
+      
+      console.log('Loading backend from:', backendPath);
+      
+      // Change working directory for backend
+      const originalCwd = process.cwd();
+      const backendDir = isDev 
+        ? path.join(__dirname, '..')
+        : path.join(process.resourcesPath, 'app.asar.unpacked');
+      
+      console.log('Changing cwd to:', backendDir);
+      process.chdir(backendDir);
+      
+      // Require and start the backend server
+      try {
+        backendServer = require(backendPath);
+        console.log('✅ Backend server loaded successfully');
+        
+        // Backend starts automatically when required (it has app.listen in server.js)
+        // Give it a moment to start
+        setTimeout(() => {
+          console.log('✅ Backend should be running on port 5001');
+          resolve();
+        }, 2000);
+        
+      } catch (requireError) {
+        console.error('❌ Failed to require backend:', requireError);
+        console.error('Stack:', requireError.stack);
+        // Restore original cwd
+        process.chdir(originalCwd);
+        reject(requireError);
       }
-    };
-    
-    console.log('Spawning backend with Electron as Node.js');
-    backendProcess = spawn(nodeExecutable, [backendPath], spawnOptions);
-
-    backendProcess.stdout.on('data', (data) => {
-      console.log(`Backend: ${data}`);
-      // Backend is ready when we see the port message
-      if (data.toString().includes('5001')) {
-        resolve();
-      }
-    });
-
-    backendProcess.stderr.on('data', (data) => {
-      console.error(`Backend Error: ${data}`);
-    });
-
-    backendProcess.on('close', (code) => {
-      console.log(`Backend process exited with code ${code}`);
-    });
-
-    backendProcess.on('error', (error) => {
-      console.error('Failed to start backend:', error);
+      
+    } catch (error) {
+      console.error('❌ Failed to start backend:', error);
+      console.error('Stack:', error.stack);
       reject(error);
-    });
-
-    // Resolve after 3 seconds even if we don't see the port message
-    setTimeout(() => resolve(), 3000);
+    }
   });
 }
 
@@ -151,11 +140,8 @@ app.whenReady().then(async () => {
 });
 
 app.on('window-all-closed', () => {
-  // Kill backend process when app closes
-  if (backendProcess) {
-    console.log('Killing backend process...');
-    backendProcess.kill();
-  }
+  // Backend will stop when app quits (runs in same process)
+  console.log('All windows closed');
   
   if (process.platform !== 'darwin') {
     app.quit();
@@ -163,10 +149,8 @@ app.on('window-all-closed', () => {
 });
 
 app.on('quit', () => {
-  // Ensure backend is killed on quit
-  if (backendProcess) {
-    backendProcess.kill();
-  }
+  // Backend server closes automatically when process exits
+  console.log('App quitting...');
 });
 
 // IPC Handlers
