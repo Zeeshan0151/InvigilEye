@@ -24,8 +24,27 @@ function createWindow() {
     mainWindow.loadURL('http://localhost:3000');
     mainWindow.webContents.openDevTools();
   } else {
-    mainWindow.loadFile(path.join(__dirname, '../renderer/dist/index.html'));
+    // Fixed path for production build
+    const indexPath = path.join(__dirname, '..', 'renderer', 'dist', 'index.html');
+    console.log('Loading from:', indexPath);
+    
+    mainWindow.loadFile(indexPath).catch(err => {
+      console.error('Failed to load:', err);
+    });
+    
+    // Open DevTools in production for debugging
+    mainWindow.webContents.openDevTools();
   }
+
+  // Log any console messages from renderer
+  mainWindow.webContents.on('console-message', (event, level, message, line, sourceId) => {
+    console.log(`Renderer Log: ${message}`);
+  });
+
+  // Handle load failures
+  mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
+    console.error('Failed to load:', errorCode, errorDescription);
+  });
 
   mainWindow.on('closed', () => {
     mainWindow = null;
