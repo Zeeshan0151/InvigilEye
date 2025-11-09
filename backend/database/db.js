@@ -1,0 +1,103 @@
+const Database = require('better-sqlite3');
+const path = require('path');
+
+const dbPath = path.join(__dirname, '../../db/invigleye.db');
+const db = new Database(dbPath);
+
+const init = () => {
+  // Execute all table creation and initial data as a transaction
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT UNIQUE NOT NULL,
+      password TEXT NOT NULL,
+      role TEXT NOT NULL,
+      full_name TEXT,
+      email TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS exams (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      department TEXT,
+      venue TEXT NOT NULL,
+      exam_date TEXT NOT NULL,
+      exam_time TEXT NOT NULL,
+      end_time TEXT,
+      section TEXT,
+      invigilator_name TEXT,
+      status TEXT DEFAULT 'scheduled',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS students (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      exam_id INTEGER,
+      roll_number TEXT NOT NULL,
+      name TEXT NOT NULL,
+      image_url TEXT,
+      FOREIGN KEY (exam_id) REFERENCES exams(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS attendance (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      exam_id INTEGER NOT NULL,
+      roll_number TEXT NOT NULL,
+      name TEXT NOT NULL,
+      image_url TEXT,
+      status TEXT DEFAULT 'absent',
+      snapshot_url TEXT,
+      marked_at DATETIME,
+      FOREIGN KEY (exam_id) REFERENCES exams(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS requests (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      exam_id INTEGER,
+      type TEXT NOT NULL,
+      description TEXT,
+      status TEXT DEFAULT 'pending',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      resolved_at DATETIME,
+      FOREIGN KEY (exam_id) REFERENCES exams(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS alerts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      exam_id INTEGER,
+      student_id TEXT,
+      exam_title TEXT,
+      type TEXT NOT NULL,
+      description TEXT,
+      severity TEXT DEFAULT 'medium',
+      snapshot_url TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      acknowledged BOOLEAN DEFAULT 0,
+      FOREIGN KEY (exam_id) REFERENCES exams(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS snapshots (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      exam_id INTEGER,
+      file_path TEXT NOT NULL,
+      description TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (exam_id) REFERENCES exams(id) ON DELETE CASCADE
+    );
+  `);
+
+  // Insert default users
+  const insertUsers = db.prepare(`
+    INSERT OR IGNORE INTO users (id, username, password, role, full_name, email) 
+    VALUES (?, ?, ?, ?, ?, ?)
+  `);
+
+  insertUsers.run(1, 'admin', 'admin123', 'admin', 'Admin User', 'admin@invigleye.com');
+  insertUsers.run(2, 'invigilator', 'invig123', 'invigilator', 'John Doe', 'john@invigleye.com');
+  insertUsers.run(3, 'invigilator2', 'invig123', 'invigilator', 'Jane Smith', 'jane@invigleye.com');
+
+  console.log('✅ Database initialized successfully');
+};
+
+module.exports = { db, init };
