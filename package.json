@@ -88,47 +88,13 @@
       }
     ],
     "mac": {
-      "target": [
-        {
-          "target": "pkg",
-          "arch": [
-            "x64",
-            "arm64"
-          ]
-        },
-        {
-          "target": "dmg",
-          "arch": [
-            "x64",
-            "arm64"
-          ]
-        }
-      ],
-      "category": "public.app-category.education",
-      "hardenedRuntime": true,
-      "gatekeeperAssess": false,
-      "entitlements": null,
-      "entitlementsInherit": null
-    },
-    "pkg": {
-      "scripts": "build/pkg-scripts",
-      "installLocation": "/Applications"
+      "target": "dmg"
     },
     "win": {
       "target": "nsis"
     },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "perMachine": false,
-      "allowElevation": true,
-      "deleteAppDataOnUninstall": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true
-    },
     "linux": {
-      "target": "AppImage",
-      "category": "Education"
+      "target": "AppImage"
     }
   }
 }

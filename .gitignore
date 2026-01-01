@@ -23,7 +23,3 @@ logs/
 # Python virtual environment
 venv/
 
-# Bundled Python for distribution (too large for git)
-python-portable/
-python-portable.tar.gz
-
