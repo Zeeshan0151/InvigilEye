@@ -122,7 +122,6 @@
       "allowToChangeInstallationDirectory": true,
       "perMachine": false,
       "allowElevation": true,
-      "include": "build/download-python.nsi",
       "deleteAppDataOnUninstall": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true
@@ -130,10 +129,6 @@
     "linux": {
       "target": "AppImage",
       "category": "Education"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true
     }
   }
 }
