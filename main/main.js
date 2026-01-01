@@ -111,136 +111,35 @@ function startBackendServer() {
   });
 }
 
-// Check if Python is available (should be installed during setup)
+// Check if Python is available in venv
 async function ensurePythonAvailable() {
-  if (isDev) {
-    // In development, assume venv Python is available
-    isPythonReady = true;
-    return true;
-  }
-
-  const pythonPortableDir = path.join(app.getPath('userData'), 'python-portable');
-  const requiredFiles = [
-    path.join(pythonPortableDir, 'python_server.py'),
-    path.join(pythonPortableDir, 'model'),
-    path.join(pythonPortableDir, 'site-packages'),
-    path.join(pythonPortableDir, 'yolov8s-pose.pt')
-  ];
-
-  const fs = require('fs');
-  
-  // Check if all required files exist
-  const allFilesExist = requiredFiles.every(file => fs.existsSync(file));
-  
-  if (allFilesExist) {
-    console.log('✅ Python bundle found and ready');
-    isPythonReady = true;
-    return true;
-  }
-
-  // Check if there's a pending tarball from installation
-  const pendingTarball = path.join(app.getPath('userData'), 'python-portable.tar.gz');
-  if (fs.existsSync(pendingTarball)) {
-    console.log('📦 Found Python tarball from installation, extracting...');
-    
-    try {
-      // Extract the tarball
-      const zlib = require('zlib');
-      const tar = require('tar');
-      
-      await new Promise((resolve, reject) => {
-        const readStream = fs.createReadStream(pendingTarball);
-        const gunzip = zlib.createGunzip();
-        
-        readStream
-          .pipe(gunzip)
-          .pipe(tar.extract({ cwd: pythonPortableDir }))
-          .on('finish', () => {
-            console.log('✅ Extraction complete');
-            // Clean up tarball
-            fs.unlink(pendingTarball, (err) => {
-              if (err) console.error('Failed to delete tarball:', err);
-            });
-            
-            // Remove pending marker
-            const pendingMarker = path.join(app.getPath('userData'), '.python-pending');
-            if (fs.existsSync(pendingMarker)) {
-              fs.unlinkSync(pendingMarker);
-            }
-            
-            resolve();
-          })
-          .on('error', reject);
-      });
-      
-      isPythonReady = true;
-      return true;
-    } catch (error) {
-      console.error('❌ Failed to extract Python bundle:', error);
-      isPythonReady = false;
-      return false;
-    }
-  }
-
-  console.log('⚠️ Python bundle not found');
-  console.log('Note: Python should have been downloaded during installation.');
-  console.log('If you skipped that step, please reinstall the application.');
-  isPythonReady = false;
-  return false;
+  // Always use venv Python (local development only)
+  console.log('Using Python from venv/');
+  isPythonReady = true;
+  return true;
 }
 
-// Start the Python AI server
+// Start the Python AI server from venv
 function startPythonServer() {
   return new Promise((resolve, reject) => {
     try {
       console.log('Starting Python AI server...');
-      console.log('Platform:', process.platform);
-      console.log('isDev:', isDev);
       
-      let pythonPath;
-      let scriptPath;
-      let pythonArgs;
+      // Always use venv Python (local development only)
+      const pythonPath = 'python3';
+      const scriptPath = path.join(__dirname, '../backend/python_server.py');
+      const pythonArgs = [scriptPath];
       
-      if (isDev) {
-        // Development mode: use venv Python
-        pythonPath = 'python3';
-        scriptPath = path.join(__dirname, '../backend/python_server.py');
-        pythonArgs = [scriptPath];
-        
-        // Set PYTHONPATH to include venv
-        const venvSitePackages = path.join(__dirname, '../venv/lib/python3.11/site-packages');
-        process.env.PYTHONPATH = venvSitePackages + ':' + (process.env.PYTHONPATH || '');
-      } else {
-        // Production mode: use downloaded Python in userData
-        const pythonPortableDir = path.join(app.getPath('userData'), 'python-portable');
-        scriptPath = path.join(pythonPortableDir, 'python_server.py');
-        
-        // Set PYTHONPATH to use bundled dependencies
-        const bundledSitePackages = path.join(pythonPortableDir, 'site-packages');
-        process.env.PYTHONPATH = bundledSitePackages + ':' + (process.env.PYTHONPATH || '');
-        
-        if (process.platform === 'win32') {
-          // Windows: use bundled Python executable
-          pythonPath = path.join(pythonPortableDir, 'windows-python', 'python.exe');
-          pythonArgs = [scriptPath];
-        } else {
-          // macOS/Linux: use system Python with bundled packages
-          pythonPath = 'python3';
-          pythonArgs = [scriptPath];
-        }
-        
-        console.log('Python portable dir:', pythonPortableDir);
-        console.log('Script path:', scriptPath);
-        console.log('PYTHONPATH:', process.env.PYTHONPATH);
-      }
+      // Set PYTHONPATH to include venv
+      const venvSitePackages = path.join(__dirname, '../venv/lib/python3.11/site-packages');
+      process.env.PYTHONPATH = venvSitePackages + ':' + (process.env.PYTHONPATH || '');
       
-      console.log('Spawning Python process...');
       console.log('Python executable:', pythonPath);
-      console.log('Arguments:', pythonArgs);
+      console.log('Script path:', scriptPath);
       
       // Spawn Python server
       pythonProcess = spawn(pythonPath, pythonArgs, {
-        cwd: isDev ? path.join(__dirname, '..') : path.join(app.getPath('userData'), 'python-portable'),
+        cwd: path.join(__dirname, '..'),
         env: process.env,
         stdio: ['pipe', 'pipe', 'pipe']
       });
@@ -327,36 +226,10 @@ function createWindow() {
 }
 
 app.whenReady().then(async () => {
-  // Only start backend and Python server in production (in dev, concurrently handles it)
-  if (!isDev) {
-    console.log('Starting servers in production mode...');
-    
-    try {
-      // Start Express backend
-      await startBackendServer();
-      console.log('✅ Backend server started');
-      
-      // Check if Python is available
-      await ensurePythonAvailable();
-      
-      // Only start Python if it's ready (downloaded)
-      if (isPythonReady) {
-        await startPythonServer();
-        console.log('✅ Python server started');
-      } else {
-        console.log('⏳ Python server will start after download completes');
-      }
-      
-      console.log('All available servers started, creating window...');
-    } catch (error) {
-      console.error('CRITICAL: Server failed to start:', error);
-      console.error('App will open anyway to show error...');
-      // Continue to create window even if servers fail
-    }
-  } else {
-    console.log('Development mode: Servers started by concurrently');
-    isPythonReady = true;
-  }
+  // In development, concurrently handles all servers
+  // Just create the window
+  console.log('Development mode: Servers handled by npm start');
+  isPythonReady = true;
   
   createWindow();
 
