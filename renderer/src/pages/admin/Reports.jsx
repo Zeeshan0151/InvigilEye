@@ -89,7 +89,7 @@ const Reports = () => {
 
   const columns = [
     { key: 'exam_title', label: 'Exam / Course', render: (report) => report.exam_title || 'N/A' },
-    { key: 'invigilator_name', label: 'Invigilator', render: (report) => report.invigilator_name || 'N/A' },
+    { key: 'invigilator_email', label: 'Invigilator', render: (report) => report.invigilator_email || 'N/A' },
     { key: 'student_id', label: 'Student ID', render: (report) => parseStudentId(report.description) },
     { key: 'room', label: 'Room', render: (report) => report.exam_venue || report.room || 'N/A' },
     { 
@@ -209,7 +209,7 @@ const Reports = () => {
                 </tr>
                 <tr>
                   <td className="px-6 py-4 font-semibold text-gray-900 bg-gray-100">Submitted By:</td>
-                  <td className="px-6 py-4 text-gray-900">{selectedRequest.invigilator_name || 'N/A'}</td>
+                  <td className="px-6 py-4 text-gray-900">{selectedRequest.invigilator_email || 'N/A'}</td>
                 </tr>
                 <tr>
                   <td className="px-6 py-4 font-semibold text-gray-900 bg-gray-100">Submitted At:</td>

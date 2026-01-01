@@ -368,7 +368,7 @@ const MaterialRequest = () => {
                 </tr>
                 <tr>
                   <td className="px-6 py-4 font-semibold text-gray-900 bg-gray-100">Submitted By:</td>
-                  <td className="px-6 py-4 text-gray-900">{selectedRequest.invigilator_name || user.full_name}</td>
+                  <td className="px-6 py-4 text-gray-900">{selectedRequest.invigilator_email || user.email || user.full_name}</td>
                 </tr>
                 <tr>
                   <td className="px-6 py-4 font-semibold text-gray-900 bg-gray-100">Submitted At:</td>

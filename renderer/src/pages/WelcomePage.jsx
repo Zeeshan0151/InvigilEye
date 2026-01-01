@@ -75,7 +75,7 @@ const WelcomePage = () => {
             <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
             <div className="relative p-8 flex flex-col items-center">
               <Shield className="w-12 h-12 mb-4" />
-              <h3 className="text-2xl font-bold mb-2">Login as Admin</h3>
+              <h3 className="text-2xl font-bold mb-2">Continue as Admin</h3>
               <p className="text-blue-100 text-center">
                 Manage exams, view reports, and handle requests
               </p>
@@ -83,13 +83,13 @@ const WelcomePage = () => {
           </button>
 
           <button
-            onClick={() => navigate('/invigilator/select-exam')}
+            onClick={() => navigate('/invigilator-login')}
             className="group relative w-full md:w-80 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
           >
             <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
             <div className="relative p-8 flex flex-col items-center">
               <Users className="w-12 h-12 mb-4" />
-              <h3 className="text-2xl font-bold mb-2">Invigilator Dashboard</h3>
+              <h3 className="text-2xl font-bold mb-2">Continue as Invigilator</h3>
               <p className="text-green-100 text-center">
                 Monitor attendance and manage exam sessions
               </p>

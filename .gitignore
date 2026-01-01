@@ -16,3 +16,10 @@ backend/uploads/*.pdf
 !backend/uploads/.gitkeep
 !backend/uploads/README.md
 
+# Ignore pose detection snapshots and logs
+snapshots/
+logs/
+
+# Python virtual environment
+venv/
+

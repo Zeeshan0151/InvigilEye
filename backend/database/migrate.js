@@ -29,7 +29,7 @@ try {
     'department': 'TEXT',
     'end_time': 'TEXT',
     'section': 'TEXT',
-    'invigilator_name': 'TEXT'
+    'invigilator_email': 'TEXT'
   };
   
   let needsMigration = false;
@@ -39,6 +39,19 @@ try {
     if (!existingColumns.includes(column)) {
       needsMigration = true;
       missingColumns.push(column);
+    }
+  }
+  
+  // Handle column rename from invigilator_name to invigilator_email
+  if (existingColumns.includes('invigilator_name') && !existingColumns.includes('invigilator_email')) {
+    console.log('\n🔄 Renaming column invigilator_name to invigilator_email...');
+    try {
+      db.exec(`ALTER TABLE exams ADD COLUMN invigilator_email TEXT`);
+      db.exec(`UPDATE exams SET invigilator_email = invigilator_name WHERE invigilator_name IS NOT NULL`);
+      console.log('✅ Column renamed and data migrated successfully');
+      needsMigration = true;
+    } catch (error) {
+      console.error('❌ Error renaming column:', error.message);
     }
   }
   

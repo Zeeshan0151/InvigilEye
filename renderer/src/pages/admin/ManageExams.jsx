@@ -40,7 +40,7 @@ const ManageExams = () => {
           exam.venue.toLowerCase().includes(searchQuery.toLowerCase()) ||
           (exam.department && exam.department.toLowerCase().includes(searchQuery.toLowerCase())) ||
           (exam.section && exam.section.toLowerCase().includes(searchQuery.toLowerCase())) ||
-          (exam.invigilator_name && exam.invigilator_name.toLowerCase().includes(searchQuery.toLowerCase()))
+          (exam.invigilator_email && exam.invigilator_email.toLowerCase().includes(searchQuery.toLowerCase()))
       );
       setFilteredExams(filtered);
     } else {
@@ -103,7 +103,7 @@ const ManageExams = () => {
       exam_time: exam.exam_time,
       end_time: exam.end_time || '',
       section: exam.section || '',
-      invigilator_name: exam.invigilator_name || '',
+      invigilator_email: exam.invigilator_email || '',
       status: exam.status
     });
     setShowEditModal(true);
@@ -158,7 +158,7 @@ const ManageExams = () => {
     { 
       key: 'invigilator', 
       label: 'Invigilator',
-      render: (exam) => exam.invigilator_name || '-'
+      render: (exam) => exam.invigilator_email || '-'
     },
     { 
       key: 'status', 
@@ -434,10 +434,10 @@ const ManageExams = () => {
           />
 
           <StandardInput
-            label="Invigilator Name:"
-            name="invigilator_name"
-            type="text"
-            value={editFormData.invigilator_name || ''}
+            label="Invigilator Email:"
+            name="invigilator_email"
+            type="email"
+            value={editFormData.invigilator_email || ''}
             onChange={handleEditChange}
           />
 

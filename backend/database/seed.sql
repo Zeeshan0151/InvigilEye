@@ -1,11 +1,11 @@
--- Sample data for InvigilEye PostgreSQL Database
+-- Sample data for InvigilEye SQLite Database
 -- Run this file after the database has been initialized
 
 -- Sample exams
-INSERT INTO exams (title, venue, exam_date, exam_time, section, invigilator_id, status) VALUES
-('Database Systems - Midterm', 'Room 101', '2025-11-01', '09:00:00', 'CS-A', 2, 'scheduled'),
-('Data Structures - Final', 'Room 202', '2025-11-05', '14:00:00', 'CS-B', 3, 'scheduled'),
-('Operating Systems - Quiz', 'Lab 301', '2025-10-28', '10:30:00', 'CS-A', 2, 'completed');
+INSERT INTO exams (title, venue, exam_date, exam_time, section, invigilator_email, status) VALUES
+('Database Systems - Midterm', 'Room 101', '2025-11-01', '09:00:00', 'CS-A', 'john.doe@example.com', 'scheduled'),
+('Data Structures - Final', 'Room 202', '2025-11-05', '14:00:00', 'CS-B', 'jane.smith@example.com', 'scheduled'),
+('Operating Systems - Quiz', 'Lab 301', '2025-10-28', '10:30:00', 'CS-A', 'john.doe@example.com', 'completed');
 
 -- Sample students for first exam
 INSERT INTO students (exam_id, roll_number, name, email) VALUES
@@ -33,8 +33,8 @@ INSERT INTO alerts (exam_id, student_id, exam_title, type, description, severity
 (3, 'CS-2021-002', 'Operating Systems - Quiz', 'suspicious_behavior', 'Student was looking at another students paper', 'medium', '/snapshots/alert_002.jpg', '2025-10-28 11:00:00');
 
 -- Sample requests
-INSERT INTO requests (exam_id, type, description, invigilator_name, room, status, created_at) VALUES
-(1, 'extra_time', 'Student needs extra time due to medical condition', 'John Doe', 'Room 101', 'pending', NOW()),
-(2, 'restroom', 'Student requesting restroom break', 'Jane Smith', 'Room 202', 'approved', NOW()),
-(3, 'technical', 'Projector not working in exam hall', 'John Doe', 'Lab 301', 'resolved', '2025-10-28 10:35:00');
+INSERT INTO requests (exam_id, type, description, status, created_at) VALUES
+(1, 'extra_time', 'Student needs extra time due to medical condition', 'pending', datetime('now')),
+(2, 'restroom', 'Student requesting restroom break', 'approved', datetime('now')),
+(3, 'technical', 'Projector not working in exam hall', 'resolved', '2025-10-28 10:35:00');
 

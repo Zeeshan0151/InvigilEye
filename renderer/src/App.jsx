@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
 import WelcomePage from './pages/WelcomePage';
 import LoginPage from './pages/LoginPage';
+import InvigilatorLoginPage from './pages/InvigilatorLoginPage';
 import AdminDashboard from './pages/AdminDashboard';
 import InvigilatorDashboard from './pages/InvigilatorDashboard';
 
@@ -29,6 +30,7 @@ function App() {
           <Routes>
             <Route path="/" element={<WelcomePage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/invigilator-login" element={<InvigilatorLoginPage />} />
             <Route
               path="/admin/*"
               element={

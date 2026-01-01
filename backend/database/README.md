@@ -45,13 +45,9 @@ Stores exam information and scheduling.
 | exam_time | TEXT NOT NULL | Start time (HH:MM) |
 | end_time | TEXT | End time (HH:MM) |
 | section | TEXT | Section (A, B, C, D, E) |
-| invigilator_name | TEXT | Name of assigned invigilator |
-| invigilator_id | INTEGER | Foreign key to users table |
+| invigilator_email | TEXT | Email of assigned invigilator |
 | status | TEXT | 'scheduled', 'in_progress', 'completed' |
 | created_at | DATETIME | Record creation timestamp |
-
-**Foreign Keys:**
-- `invigilator_id` → `users(id)`
 
 ---
 
@@ -104,8 +100,6 @@ Stores invigilator requests (UMC, IT, Material).
 | exam_id | INTEGER | Foreign key to exams table |
 | type | TEXT NOT NULL | 'umc', 'it', 'material', etc. |
 | description | TEXT | Request details |
-| invigilator_name | TEXT | Name of requesting invigilator |
-| room | TEXT | Room where request originated |
 | status | TEXT | 'pending', 'approved', 'resolved' |
 | created_at | DATETIME | Request creation timestamp |
 | resolved_at | DATETIME | Resolution timestamp |
@@ -213,7 +207,7 @@ formData.append('exam_date', '2025-11-15');
 formData.append('exam_time', '09:00');
 formData.append('end_time', '11:00');
 formData.append('section', 'A');
-formData.append('invigilator_name', 'Dr. John Smith');
+formData.append('invigilator_email', 'john.smith@example.com');
 formData.append('studentCsv', fileObject); // CSV file
 
 fetch('http://localhost:5001/api/exams', {

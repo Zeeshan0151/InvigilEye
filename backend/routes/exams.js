@@ -55,16 +55,16 @@ router.get('/', (req, res) => {
   }
 });
 
-// Get exams by invigilator name
-router.get('/invigilator/:name', (req, res) => {
+// Get exams by invigilator email
+router.get('/invigilator/:email', (req, res) => {
   const query = `
     SELECT * FROM exams
-    WHERE invigilator_name = ?
+    WHERE invigilator_email = ?
     ORDER BY exam_date DESC
   `;
   
   try {
-    const exams = db.prepare(query).all(req.params.name);
+    const exams = db.prepare(query).all(req.params.email);
     res.json(exams);
   } catch (error) {
     console.error('Get exams by invigilator error:', error);
@@ -93,7 +93,7 @@ router.get('/:id', (req, res) => {
 
 // Create exam
 router.post('/', upload.single('studentCsv'), async (req, res) => {
-  const { title, department, venue, exam_date, exam_time, end_time, section, invigilator_name } = req.body;
+  const { title, department, venue, exam_date, exam_time, end_time, section, invigilator_email } = req.body;
 
   if (!title || !venue || !exam_date || !exam_time) {
     return res.status(400).json({ error: 'All fields are required' });
@@ -142,7 +142,7 @@ router.post('/', upload.single('studentCsv'), async (req, res) => {
     }
 
     const query = `
-      INSERT INTO exams (title, department, venue, exam_date, exam_time, end_time, section, invigilator_name)
+      INSERT INTO exams (title, department, venue, exam_date, exam_time, end_time, section, invigilator_email)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
@@ -154,7 +154,7 @@ router.post('/', upload.single('studentCsv'), async (req, res) => {
       exam_time, 
       end_time || null, 
       section || null, 
-      invigilator_name || null
+      invigilator_email || null
     );
     const examId = result.lastInsertRowid;
 
@@ -240,11 +240,11 @@ router.post('/', upload.single('studentCsv'), async (req, res) => {
 
 // Update exam
 router.put('/:id', (req, res) => {
-  const { title, department, venue, exam_date, exam_time, end_time, section, invigilator_name, status } = req.body;
+  const { title, department, venue, exam_date, exam_time, end_time, section, invigilator_email, status } = req.body;
   
   const query = `
     UPDATE exams 
-    SET title = ?, department = ?, venue = ?, exam_date = ?, exam_time = ?, end_time = ?, section = ?, invigilator_name = ?, status = ?
+    SET title = ?, department = ?, venue = ?, exam_date = ?, exam_time = ?, end_time = ?, section = ?, invigilator_email = ?, status = ?
     WHERE id = ?
   `;
 
@@ -257,7 +257,7 @@ router.put('/:id', (req, res) => {
       exam_time, 
       end_time, 
       section, 
-      invigilator_name, 
+      invigilator_email, 
       status, 
       req.params.id
     );

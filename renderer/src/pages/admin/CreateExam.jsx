@@ -15,7 +15,7 @@ const CreateExam = () => {
     courseTitle: '',
     department: '',
     roomNo: '',
-    invigilatorName: '',
+    invigilatorEmail: '',
     section: '',
     examDate: '',
     startTime: '',
@@ -51,7 +51,7 @@ const CreateExam = () => {
       data.append('exam_time', formData.startTime);
       data.append('end_time', formData.endTime);
       data.append('section', formData.section);
-      data.append('invigilator_name', formData.invigilatorName);
+      data.append('invigilator_email', formData.invigilatorEmail);
       
       if (file) {
         data.append('studentCsv', file);
@@ -127,13 +127,13 @@ const CreateExam = () => {
                 </select>
               </div>
 
-              {/* Invigilator Name */}
+              {/* Invigilator Email */}
               <StandardInput
-                label="Invigilator Name:"
-                name="invigilatorName"
-                type="text"
-                placeholder="e.g. Sir Ali"
-                value={formData.invigilatorName}
+                label="Invigilator Email:"
+                name="invigilatorEmail"
+                type="email"
+                placeholder="e.g. ali@example.com"
+                value={formData.invigilatorEmail}
                 onChange={handleChange}
                 required
               />

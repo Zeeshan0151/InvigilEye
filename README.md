@@ -351,7 +351,7 @@ CREATE TABLE exams (
   venue TEXT NOT NULL,
   department TEXT,
   section TEXT,
-  invigilator_name TEXT,
+  invigilator_email TEXT,
   status TEXT DEFAULT 'scheduled',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );

@@ -22,8 +22,18 @@ const SelectExam = () => {
 
   const loadOngoingExams = async () => {
     try {
+      // Get invigilator email from localStorage
+      const invigilatorEmail = localStorage.getItem('invigilator_email');
+      
+      if (!invigilatorEmail) {
+        // If no email found, redirect to login
+        toast.error('Please login first');
+        navigate('/invigilator-login');
+        return;
+      }
+
       const allExams = await examsApi.getAll();
-      const ongoing = filterOngoingExams(allExams);
+      const ongoing = filterOngoingExams(allExams, invigilatorEmail);
       setOngoingExams(ongoing);
     } catch (error) {
       toast.error('Failed to load exams');
@@ -33,13 +43,16 @@ const SelectExam = () => {
     }
   };
 
-  const filterOngoingExams = (exams) => {
+  const filterOngoingExams = (exams, invigilatorEmail) => {
     const now = new Date();
     // Use local date instead of UTC to avoid timezone issues
     const currentDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`; // HH:MM
 
     return exams.filter(exam => {
+      // Filter by invigilator email
+      if (exam.invigilator_email !== invigilatorEmail) return false;
+
       // Only show scheduled exams
       if (exam.status !== 'scheduled') return false;
 
@@ -81,6 +94,13 @@ const SelectExam = () => {
     return <LoadingSpinner message="Checking for ongoing exams..." />;
   }
 
+  const handleLogout = () => {
+    localStorage.removeItem('invigilator_email');
+    localStorage.removeItem('invigilator_name');
+    toast.info('Logged out successfully');
+    navigate('/invigilator-login');
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <PageHeader title="Select Ongoing Exam" backRoute="/" backText="Welcome Screen" />
@@ -89,13 +109,24 @@ const SelectExam = () => {
         <div className="max-w-5xl mx-auto">
           {/* Header Info */}
           <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <div>
-              <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-                Current Time: {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-              </h2>
-              <p className="text-gray-600">
-                Date: {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-              </p>
+            <div className="flex justify-between items-start">
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+                  Current Time: {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                </h2>
+                <p className="text-gray-600 mb-1">
+                  Date: {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                </p>
+                <p className="text-sm text-gray-500">
+                  Logged in as: <span className="font-medium text-gray-700">{localStorage.getItem('invigilator_email')}</span>
+                </p>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Change Invigilator
+              </button>
             </div>
           </div>
 
@@ -152,7 +183,7 @@ const SelectExam = () => {
                             <div className="flex items-center text-gray-600">
                               <Users className="w-5 h-5 mr-2 text-green-600" />
                               <span>
-                                <span className="font-medium">Invigilator:</span> {exam.invigilator_name || 'Not assigned'}
+                                <span className="font-medium">Invigilator:</span> {exam.invigilator_email || 'Not assigned'}
                               </span>
                             </div>
 

@@ -9,9 +9,8 @@ router.get('/exam/:examId', (req, res) => {
   try {
     // Get exam details
     const examQuery = `
-      SELECT e.*, u.full_name as invigilator_name, u.email as invigilator_email
+      SELECT e.*
       FROM exams e
-      LEFT JOIN users u ON e.invigilator_id = u.id
       WHERE e.id = ?
     `;
 
@@ -64,18 +63,17 @@ router.get('/summary', (req, res) => {
       e.venue,
       e.exam_date,
       e.status,
-      u.full_name as invigilator_name,
+      e.invigilator_email,
       COUNT(DISTINCT s.id) as total_students,
       COUNT(DISTINCT CASE WHEN a.status = 'present' THEN a.id END) as present_count,
       COUNT(DISTINCT al.id) as alerts_count,
       COUNT(DISTINCT r.id) as requests_count
     FROM exams e
-    LEFT JOIN users u ON e.invigilator_id = u.id
     LEFT JOIN students s ON s.exam_id = e.id
     LEFT JOIN attendance a ON a.exam_id = e.id
     LEFT JOIN alerts al ON al.exam_id = e.id
     LEFT JOIN requests r ON r.exam_id = e.id
-    GROUP BY e.id, e.title, e.venue, e.exam_date, e.status, u.full_name
+    GROUP BY e.id, e.title, e.venue, e.exam_date, e.status, e.invigilator_email
     ORDER BY e.created_at DESC
   `;
 

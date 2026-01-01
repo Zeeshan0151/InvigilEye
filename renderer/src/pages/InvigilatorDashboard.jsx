@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Topbar from '../components/layout/Topbar';
 import Dashboard from './invigilator/Dashboard';
 import SelectExam from './invigilator/SelectExam';
+import NoExam from './invigilator/NoExam';
 import Monitoring from './invigilator/Monitoring';
 import Attendance from './invigilator/Attendance';
 import Snapshots from './invigilator/Snapshots';
@@ -17,6 +18,7 @@ const InvigilatorDashboard = () => {
     '/invigilator/alerts',
     '/invigilator/material-request',
     '/invigilator/select-exam',
+    '/invigilator/no-exam',
     '/invigilator/attendance',
     '/invigilator/monitoring',
     '/invigilator/snapshots'
@@ -29,6 +31,7 @@ const InvigilatorDashboard = () => {
         <Routes>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/select-exam" element={<SelectExam />} />
+          <Route path="/no-exam" element={<NoExam />} />
           <Route path="/monitoring" element={<Monitoring />} />
           <Route path="/attendance" element={<Attendance />} />
           <Route path="/snapshots" element={<Snapshots />} />

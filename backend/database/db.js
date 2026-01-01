@@ -59,7 +59,7 @@ const init = () => {
       exam_time TEXT NOT NULL,
       end_time TEXT,
       section TEXT,
-      invigilator_name TEXT,
+      invigilator_email TEXT,
       status TEXT DEFAULT 'scheduled',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );

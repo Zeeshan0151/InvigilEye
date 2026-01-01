@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
       e.exam_time,
       e.end_time,
       e.department as exam_department,
-      e.invigilator_name
+      e.invigilator_email
     FROM requests r
     LEFT JOIN exams e ON r.exam_id = e.id
     ORDER BY r.created_at DESC

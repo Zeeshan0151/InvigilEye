@@ -70,20 +70,20 @@ const Dashboard = () => {
         {/* Remaining Cards - 2 Columns */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {dashboardCards.slice(1).map((card, index) => (
-            <button
-              key={index}
-              onClick={() => navigate(card.path)}
-              className={`${card.bgColor} p-10 rounded-2xl text-left transition-all duration-200 
-                hover:shadow-md cursor-pointer border-0`}
-            >
-              <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                {card.title}
-              </h2>
-              <p className="text-gray-700 text-base leading-relaxed">
-                {card.description}
-              </p>
-            </button>
-          ))}
+          <button
+            key={index}
+            onClick={() => navigate(card.path)}
+            className={`${card.bgColor} p-10 rounded-2xl text-left transition-all duration-200 
+              hover:shadow-md cursor-pointer border-0`}
+          >
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">
+              {card.title}
+            </h2>
+            <p className="text-gray-700 text-base leading-relaxed">
+              {card.description}
+            </p>
+          </button>
+        ))}
         </div>
       </div>
     </div>

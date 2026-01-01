@@ -130,13 +130,6 @@ const Dashboard = () => {
                 </div>
               </div>
               
-              <button
-                onClick={() => navigate('/invigilator/select-exam')}
-                className="ml-4 px-4 py-2 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-colors flex items-center gap-2 font-medium"
-              >
-                <RefreshCw className="w-4 h-4" />
-                Change Exam
-              </button>
             </div>
           </div>
         </div>

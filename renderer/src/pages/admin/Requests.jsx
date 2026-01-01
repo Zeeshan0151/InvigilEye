@@ -104,7 +104,7 @@ const Requests = () => {
 
   const columns = [
     { key: 'exam_title', label: 'Exam / Course', render: (request) => request.exam_title || 'N/A' },
-    { key: 'invigilator_name', label: 'Invigilator', render: (request) => request.invigilator_name || 'N/A' },
+    { key: 'invigilator_email', label: 'Invigilator', render: (request) => request.invigilator_email || 'N/A' },
     { key: 'material', label: 'Material', render: (request) => parseMaterialType(request.description) },
     { key: 'room', label: 'Room', render: (request) => request.exam_venue || request.room || 'N/A' },
     { 
@@ -245,7 +245,7 @@ const Requests = () => {
                 </tr>
                 <tr>
                   <td className="px-6 py-4 font-semibold text-gray-900 bg-gray-100">Submitted By:</td>
-                  <td className="px-6 py-4 text-gray-900">{selectedRequest.invigilator_name || 'N/A'}</td>
+                  <td className="px-6 py-4 text-gray-900">{selectedRequest.invigilator_email || 'N/A'}</td>
                 </tr>
                 <tr>
                   <td className="px-6 py-4 font-semibold text-gray-900 bg-gray-100">Submitted At:</td>

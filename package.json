@@ -6,6 +6,7 @@
   "scripts": {
     "start": "concurrently \"npm run backend\" \"npm run electron:dev\"",
     "backend": "node backend/server.js",
+    "python": "source venv/bin/activate && python backend/python_server.py",
     "electron:dev": "wait-on http://localhost:3000 && electron .",
     "react:dev": "vite",
     "react:build": "vite build",
@@ -15,6 +16,7 @@
     "build:linux": "vite build && electron-builder --linux",
     "build:all": "vite build && electron-builder -mwl",
     "dev": "concurrently \"npm run react:dev\" \"npm run backend\" \"wait-on http://localhost:3000 && electron .\"",
+    "dev:full": "concurrently \"npm run react:dev\" \"npm run backend\" \"npm run python\" \"wait-on http://localhost:3000 && electron .\"",
     "postinstall": "electron-builder install-app-deps",
     "cleanup:uploads": "node backend/utils/cleanup-uploads.js",
     "migrate:db": "node backend/database/migrate.js"
@@ -28,7 +30,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "better-sqlite3": "^12.4.1",
+    "better-sqlite3": "11.7.0",
     "cors": "^2.8.5",
     "csv-parser": "^3.0.0",
     "date-fns": "^2.30.0",
@@ -80,13 +82,18 @@
       {
         "from": "db",
         "to": "db",
-        "filter": [".gitkeep"]
+        "filter": [
+          ".gitkeep"
+        ]
       }
     ],
     "mac": {
       "target": {
         "target": "dmg",
-        "arch": ["x64", "arm64"]
+        "arch": [
+          "x64",
+          "arm64"
+        ]
       },
       "category": "public.app-category.education",
       "hardenedRuntime": true,

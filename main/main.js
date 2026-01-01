@@ -156,16 +156,20 @@ function createWindow() {
 }
 
 app.whenReady().then(async () => {
-  // Start backend server first
-  console.log('Starting backend server...');
-  
-  try {
-    await startBackendServer();
-    console.log('Backend server started, creating window...');
-  } catch (error) {
-    console.error('CRITICAL: Backend failed to start:', error);
-    console.error('App will open anyway to show error...');
-    // Continue to create window even if backend fails
+  // Only start backend in production (in dev, concurrently handles it)
+  if (!isDev) {
+    console.log('Starting backend server...');
+    
+    try {
+      await startBackendServer();
+      console.log('Backend server started, creating window...');
+    } catch (error) {
+      console.error('CRITICAL: Backend failed to start:', error);
+      console.error('App will open anyway to show error...');
+      // Continue to create window even if backend fails
+    }
+  } else {
+    console.log('Development mode: Backend started by concurrently');
   }
   
   createWindow();
