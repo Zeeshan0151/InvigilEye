@@ -13,46 +13,13 @@
 
 ---
 
-## 📥 Download
-
-<div align="center">
-
-### Latest Build
-
-**Download the installers from GitHub Actions:**
-
-👉 **[Go to Latest Build](https://github.com/Zeeshan0151/InvigilEye/actions/workflows/build.yml)** 👈
-
-Click on the latest successful build → Scroll to "Artifacts" section → Download:
-- 🪟 **InvigilEye-Windows-Installer** (~150 MB)
-- 🍎 **InvigilEye-macOS-Installer** (~100 MB)
-
-</div>
-
-### Installation Instructions:
-
-**Windows:**
-1. Download and extract `InvigilEye-Windows-Installer.zip`
-2. Double-click `InvigilEye Setup 1.0.0.exe`
-3. Follow the installation wizard
-4. Launch from Start Menu
-
-**macOS:**
-1. Download and extract `InvigilEye-macOS-Installer.zip`
-2. Open `InvigilEye-1.0.0.dmg`
-3. Drag InvigilEye to Applications folder
-4. Launch from Applications or Launchpad
-
----
-
 ## 📋 Table of Contents
 
-- [Download](#download)
 - [Overview](#overview)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Prerequisites](#prerequisites)
-- [Installation](#installation)
+- [Installation & Setup](#installation--setup)
 - [Configuration](#configuration)
 - [Running the Application](#running-the-application)
 - [Project Structure](#project-structure)
@@ -118,6 +85,13 @@ The application is built using Electron for cross-platform desktop support, Reac
 - **Papa Parse** - CSV parsing library
 - **CORS** - Cross-origin resource sharing
 
+### AI/Python
+- **Flask** - Python web server
+- **YOLOv8 (Ultralytics)** - Pose detection model
+- **OpenCV** - Computer vision library
+- **NumPy** - Numerical computing
+- **PyTorch** - Deep learning framework
+
 ### Development Tools
 - **Concurrently** - Run multiple commands simultaneously
 - **Wait-on** - Wait for resources before starting
@@ -129,27 +103,29 @@ The application is built using Electron for cross-platform desktop support, Reac
 
 Before you begin, ensure you have the following installed:
 
-- **Node.js** (v16 or higher)
+- **Node.js** (v18 or higher)
 - **npm** (v7 or higher)
+- **Python 3.11**
 - **Git**
 
 ### System Requirements
 - **OS**: Windows 10+, macOS 10.13+, or Linux
-- **RAM**: 4GB minimum (8GB recommended)
-- **Storage**: 500MB free space
+- **RAM**: 8GB minimum (16GB recommended for AI features)
+- **Storage**: 2GB free space
+- **Camera**: Webcam required for monitoring features
 
 ---
 
-## 🚀 Installation
+## 🚀 Installation & Setup
 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/invigleye.git
-cd invigleye
+git clone https://github.com/Zeeshan0151/InvigilEye.git
+cd InvigilEye
 ```
 
-### 2. Install Dependencies
+### 2. Install Node.js Dependencies
 
 ```bash
 npm install
@@ -157,82 +133,92 @@ npm install
 
 This will install all required dependencies for the frontend, backend, and Electron.
 
-### 3. Database Setup
+### 3. Setup Python Environment
 
-The database will be automatically created on first run. To manually initialize or migrate:
+The application uses Python for AI-powered pose detection. Set up the Python environment:
 
 ```bash
-npm run migrate:db
+# Create virtual environment
+python3 -m venv venv
+
+# Activate virtual environment
+# On macOS/Linux:
+source venv/bin/activate
+
+# On Windows:
+venv\Scripts\activate
+
+# Install Python dependencies
+pip install -r requirements.txt
 ```
+
+**Note**: If `pip install -r requirements.txt` fails with Python version error, install packages individually:
+```bash
+pip install face_recognition dlib opencv-python numpy pandas psycopg2-binary ultralytics
+```
+
+### 4. Database Setup
+
+The database will be automatically created and migrated when you run `npm start`. No manual setup needed!
 
 ---
 
 ## ⚙️ Configuration
 
-### Database Configuration
+### Default Ports
 
-The SQLite database is located at `db/invigleye.db`. The database schema includes:
+The application runs with the following default ports:
 
+- **Frontend (React/Vite)**: `http://localhost:3000`
+- **Backend (Express)**: `http://localhost:5001`
+- **Python AI Server**: `http://localhost:5002`
+- **Electron**: Launches automatically
+
+### Database Location
+
+The SQLite database is automatically created at:
+- **Development**: `~/Library/Application Support/InvigilEye/invigleye.db` (macOS)
+- **Development**: `%APPDATA%\InvigilEye\invigleye.db` (Windows)
+
+The database schema includes:
 - **users** - Admin and invigilator accounts
 - **exams** - Exam sessions with details
 - **attendance** - Student attendance records
 - **requests** - UMC and material requests
-- **snapshots** - Captured evidence (metadata)
-
-### Environment Setup
-
-The application runs with the following default ports:
-
-- **Frontend (Vite)**: `http://localhost:3000`
-- **Backend (Express)**: `http://localhost:5001`
-- **Electron**: Launches automatically
-
-To change ports, modify:
-- Frontend: `vite.config.js`
-- Backend: `backend/server.js`
+- **alerts** - AI pose detection alerts
 
 ---
 
 ## 🏃‍♂️ Running the Application
 
-### Development Mode
-
-To run the complete application (Frontend + Backend + Electron):
+### Start Everything with One Command
 
 ```bash
-npm run dev
+npm start
 ```
 
-This command will:
-1. Start the Vite development server (Frontend)
-2. Start the Express backend server
-3. Wait for the frontend to be ready
-4. Launch the Electron application
+This single command will:
+1. ✅ Rebuild better-sqlite3 (ensures DB compatibility)
+2. ✅ Run database migrations (updates schema if needed)
+3. ✅ Start React frontend (Vite dev server on port 3000)
+4. ✅ Start Express backend (API server on port 5001)
+5. ✅ Start Python AI server (Pose detection on port 5002)
+6. ✅ Launch Electron desktop app
 
-### Individual Components
+**That's it!** The application will open automatically once all servers are ready.
 
-Run components separately for debugging:
+### Troubleshooting Startup
 
-```bash
-# Frontend only
-npm run react:dev
+If you encounter database errors on startup, the `npm start` command automatically handles:
+- Rebuilding native modules (better-sqlite3)
+- Running database migrations
+- Ensuring schema compatibility
 
-# Backend only
-npm run backend
+### Stopping the Application
 
-# Electron only (requires frontend to be running)
-npm run electron:dev
-```
-
-### Production Build
-
-Build the application for distribution:
-
-```bash
-npm run build
-```
-
-This creates distributable packages in the `dist/` directory for your platform.
+To stop all services:
+- Close the Electron window, or
+- Press `Ctrl+C` in the terminal
 
 ---
 
