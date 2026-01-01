@@ -296,10 +296,6 @@ invigleye/
 
 ### Invigilator User
 
-**Default Credentials:**
-- Username: `invigilator`
-- Password: `inv123`
-
 **Capabilities:**
 - Select ongoing exams
 - Mark attendance
@@ -418,56 +414,3 @@ npm install
 ```
 
 ---
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. **Fork the repository**
-2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
-3. **Commit changes**: `git commit -m 'Add amazing feature'`
-4. **Push to branch**: `git push origin feature/amazing-feature`
-5. **Open a Pull Request**
-
-### Code Style
-
-- Use ESLint configuration provided
-- Follow React best practices
-- Write meaningful commit messages
-- Add comments for complex logic
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 📞 Support
-
-For issues, questions, or suggestions:
-
-- **Issues**: [GitHub Issues](https://github.com/yourusername/invigleye/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/invigleye/discussions)
-- **Email**: support@invigleye.com
-
----
-
-## 🙏 Acknowledgments
-
-- Built with [Electron](https://www.electronjs.org/)
-- UI powered by [React](https://reactjs.org/)
-- Styled with [Tailwind CSS](https://tailwindcss.com/)
-- Icons from [Lucide](https://lucide.dev/)
-
----
-
-<div align="center">
-  
-  **Made with ❤️ for better exam management**
-  
-  ⭐ Star this repo if you find it helpful!
-  
-</div>
-
