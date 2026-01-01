@@ -1,7 +1,7 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
-contextBridge.exposeInMainWorld('electron', {
-  getAppPath: () => ipcRenderer.invoke('get-app-path'),
-  showNotification: (title, body) => ipcRenderer.invoke('show-notification', { title, body }),
+// Expose protected methods that allow the renderer process to use
+// the ipcRenderer without exposing the entire object
+contextBridge.exposeInMainWorld('electronAPI', {
+  checkPythonStatus: () => ipcRenderer.invoke('check-python-status')
 });
-

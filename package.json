@@ -4,7 +4,7 @@
   "description": "Physical Exam Invigilation Desktop App",
   "main": "main/main.js",
   "scripts": {
-    "start": "concurrently \"npm run backend\" \"npm run electron:dev\"",
+    "start": "concurrently \"npm run react:dev\" \"npm run backend\" \"npm run python\" \"wait-on http://localhost:3000 && electron .\"",
     "backend": "node backend/server.js",
     "python": "source venv/bin/activate && python backend/python_server.py",
     "electron:dev": "wait-on http://localhost:3000 && electron .",
@@ -88,21 +88,44 @@
       }
     ],
     "mac": {
-      "target": {
-        "target": "dmg",
-        "arch": [
-          "x64",
-          "arm64"
-        ]
-      },
+      "target": [
+        {
+          "target": "pkg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
       "category": "public.app-category.education",
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "entitlements": null,
       "entitlementsInherit": null
     },
+    "pkg": {
+      "scripts": "build/pkg-scripts",
+      "installLocation": "/Applications"
+    },
     "win": {
       "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false,
+      "allowElevation": true,
+      "include": "build/download-python.nsi",
+      "deleteAppDataOnUninstall": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
     },
     "linux": {
       "target": "AppImage",
