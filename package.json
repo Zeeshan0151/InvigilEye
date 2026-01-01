@@ -4,23 +4,10 @@
   "description": "Physical Exam Invigilation Desktop App",
   "main": "main/main.js",
   "scripts": {
-    "prestart": "npm rebuild better-sqlite3 && node backend/database/migrate.js",
-    "start": "concurrently \"npm run react:dev\" \"npm run backend\" \"npm run python\" \"wait-on http://localhost:3000 && electron .\"",
+    "start": "npm rebuild better-sqlite3 && node backend/database/migrate.js && concurrently \"npm run react:dev\" \"npm run backend\" \"npm run python\" \"wait-on http://localhost:3000 && electron .\"",
     "backend": "node backend/server.js",
     "python": "source venv/bin/activate && python backend/python_server.py",
-    "electron:dev": "wait-on http://localhost:3000 && electron .",
-    "react:dev": "vite",
-    "react:build": "vite build",
-    "build": "vite build && electron-builder",
-    "build:win": "vite build && electron-builder --win",
-    "build:mac": "vite build && electron-builder --mac --x64 --arm64",
-    "build:linux": "vite build && electron-builder --linux",
-    "build:all": "vite build && electron-builder -mwl",
-    "dev": "concurrently \"npm run react:dev\" \"npm run backend\" \"wait-on http://localhost:3000 && electron .\"",
-    "dev:full": "concurrently \"npm run react:dev\" \"npm run backend\" \"npm run python\" \"wait-on http://localhost:3000 && electron .\"",
-    "postinstall": "electron-builder install-app-deps",
-    "cleanup:uploads": "node backend/utils/cleanup-uploads.js",
-    "migrate:db": "node backend/database/migrate.js"
+    "react:dev": "vite"
   },
   "keywords": [
     "electron",
